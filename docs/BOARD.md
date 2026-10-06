@@ -60,13 +60,31 @@ LANDED | row=4 | sha=170e34ad7b863baaedbf1c41067a0f23ce469574 | verify=MY OWN: `
   honest about that ("In progress.")
 
 IN-FLIGHT | ledger=5 | session=4f1d84a5-e489-4882-8d17-6c614fc06701 | worktree=/home/administrator/projects/Tetris/worktrees/simulation-core
-  | branch=slice/simulation-core | base=8bab1c5e6830b37b0ecd13e14d80812c753f3450 | state=RUNNING
+  | branch=slice/simulation-core | base=8bab1c5e6830b37b0ecd13e14d80812c753f3450 | state=LANDED 2026-10-06 — see LANDED row=5 below
   | scope=THE PURE SIMULATION under `src/game/` — the 19 orientations and refused-in-place
   rotation, the LFSR + spawn-count randomiser, the 10x22 board with 2 hidden rows, the gravity
   table, soft drop, lock-on-failed-drop, line clear with hidden-row truncation, lock-time-overlap
   top-out, post-clear-level scoring, the first-level-up table, DAS 16/6, spawn/ARE timing, and the
   one-piece accurate preview. 13 named pins; dispatcher design decision Vector D. Nothing renders.
   | cadence=SILENCE until LANDED or BLOCKED; a clean tree with no new commit is normal
+
+LANDED | row=5 | sha=this commit carries this row (`git log -1 --format=%H origin/main`) |
+  branch=slice/simulation-core | worktree=worktrees/simulation-core | session=4f1d84a5-e489-4882-8d17-6c614fc06701 |
+  verify=MY OWN, in-turn foreground from the worktree: full gate exit 0 twice — pre-rebase run
+  (build 53ms, 45/45 in 639ms) and the re-gate on the REBASED tree 4f6b7e2 (build 48ms, 45/45 in
+  635ms); after the docs-only conflict-resolution amend, cheap tier exit 2 (docs change the
+  typecheck/build not at all, and the cheap tier takes no lock) · raw log .gate-logs/gate.log (the
+  gate writes to the SHARED git-common-dir, so every worktree overwrites the same file) | arms=4 arms, each injected then
+  restored from an out-of-tree copy inside a trap: (1) simulation.ts 8cb24aab54bdf534 ->
+  82f28184ddfd9d00 RED pin 1 (+ pin 7), (2) lfsr.ts 9ac9894154bbfc54 -> 90f5fcfacc4027ae RED pin 2
+  (+ pins 3, 5, 9), (3) gravity.ts 2b1bfc9b0d165807 -> 93760edd77151ede RED pin 6 (both halves),
+  (4) das.ts 5766569f48d15956 -> e5d46ca71d0707d6 RED pin 11; every arm exit 1, post-arm hashes
+  identical to baseline | docs=architecture (real seam rows + the SimulationState shape), ledger
+  row 5, testing (full pin matrix + arm hashes), board | COPIES: 1 — checked, no duplication
+  (grepped: the 19 orientations, the LFSR recurrence, spawnTable, the gravity table, the DAS
+  constants and the `[W]` delays each appear in exactly one module under src/game/) | note=THE
+  SIMULATION ONLY — nothing renders; src/main.ts still writes a version string. Pins 8, 10, 12,
+  13 are green but have NOT been watched red.
 
 QUEUE | ledger=2 CLOSED — the ruleset decision is in force and is being implemented by the
   in-flight slice above
