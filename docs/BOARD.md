@@ -29,10 +29,14 @@ reconciled: 170e34a · 2026-10-06T13:41Z
 
 SESSION | id=session-76777914-6dab-4bba-975f-d4444ae0ed6d | model=deepseek/deepseek-flash | role=chief-of-staff | state=dispatching
 
-PROBE | id=b496443b-2efb-44af-8cbe-3d0574bf9953 | state=in-flight | q="the exact NES
-  Tetris mechanics — rotation and any wall-bump behaviour, the piece randomiser algorithm,
-  DAS frames, the gravity table, scoring, lock behaviour, top-out" | src=docs/DECISION-LEDGER.md
-  row 2 | disposition=STEER, never restart; delete the moment its report is consumed
+PROBE | id=b496443b-2efb-44af-8cbe-3d0574bf9953 | state=CONSUMED 2026-10-06 and DELETED |
+  q="the exact NES Tetris mechanics" | answer=docs/NES-MECHANICS.md — sourced, confidence-tagged
+  [V]/[W]/[I], with reference vectors regenerated INDEPENDENTLY by the dispatcher
+
+DIVERGENCE | deliberate, bounded, and listed in docs/NES-MECHANICS.md §12 so a successor does
+  not read them as oversights: the packed-BCD soft-drop scoring bug, the top-row 256-cell clear
+  bug, hidden-row collision indexing wraps, high-level display glitches, the ~level-155 crash,
+  and PAL timings are NOT reproduced. Score is a plain integer; NTSC only.
 
 LANDED | row=1 | sha=63a15003cf0bb2f5785c09421ea5065305b7c168 | verify=MY OWN: cheap tier
   green (exit 2) + full gate GREEN (exit 0) · 1/1 tests · vite build 58ms · raw log
@@ -65,8 +69,8 @@ QUEUE-CLOSED | row=3 — the remote now exists; see INFRA · row=4 — PUBLISHED
 RECOVERY | repo=/home/administrator/projects/Tetris |
   remote=https://github.com/ArndRosemeier/Tetris.git | branch=main | gate=bash scripts/gate.sh
   | publish=bash scripts/publish.sh | live=https://apps.futuremagic.de/Tetris/ (symlink from
-  ~/apps/Tetris to dist/, so every rebuild goes live) | logs=.gate-logs/
-  | process=~/projects/Toolbox/docs/WAY-OF-WORKING.md
+  ~/apps/Tetris to dist/, so every rebuild goes live) | mechanics=docs/NES-MECHANICS.md
+  | logs=.gate-logs/ | process=~/projects/Toolbox/docs/WAY-OF-WORKING.md
   | sessions=~/.dsh/sessions/--home-administrator-projects-Tetris--
 ```
 
@@ -110,6 +114,13 @@ RECOVERY | repo=/home/administrator/projects/Tetris |
   was proven to be a pure addition (`git diff --numstat` = 1 insertion, 0 deletions). Rule: to
   append to an append-only file, anchor the edit on the END of the LAST row (or use a heredoc)
   — never on a whole existing row — and always verify the result is an ADDITION.
+- `TRAP` — **the dispatcher's own independent check "disproved" a correct algorithm.** Calling
+  the pure picker back-to-back with NO frames between calls gave T 8.71% / I 20.27% against the
+  spec's 14.73% / 13.84% — which read as a spec error and was a **model** error: the documented
+  distribution assumes frames elapse, each stepping the LFSR. With any realistic gap the
+  distribution is ≈14.3% per piece, corroborating the algorithm (docs/NES-MECHANICS.md §11).
+  Rule: when an independent check disagrees with a sourced spec, suspect the CHECK'S MODEL
+  before the spec — and never brief a writer on a "correction" derived from a bad model.
 
 ## Recovery pointers
 
