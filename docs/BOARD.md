@@ -25,12 +25,17 @@ claim — never use that key for prose about a retirement that is still owed.
 ## Board
 
 ```
-reconciled: (none — origin does not exist yet; see RECOVERY and BLOCKER below)
+reconciled: 63a1500 · 2026-10-06T13:30Z
 
 SESSION | id=session-76777914-6dab-4bba-975f-d4444ae0ed6d | model=deepseek/deepseek-flash | role=chief-of-staff | state=idle
 
-BOOTSTRAP | sha=<pending first commit> | by=dispatcher | repo initialized, gate + board +
-  record + brief in place, skeleton builds; verify=cheap tier exit 2 + full tier exit 0
+LANDED | row=1 | sha=63a15003cf0bb2f5785c09421ea5065305b7c168 | verify=MY OWN: cheap tier
+  green (exit 2) + full gate GREEN (exit 0) · 1/1 tests · vite build 58ms · raw log
+  .gate-logs/gate.log | arms=4f0fd4092437bea2 (baseline) vs edf3ec532ba1bbda (injected
+  APP_VERSION) — arm B RED on the pin `APP_VERSION matches the version in package.json`,
+  exit 1; restore verified, tree clean | retired: nothing (no writers dispatched yet) |
+  docs=board, ledger row 1, testing per-landing 63a1500 | note=bootstrap only; no game
+  code exists yet
 
 QUEUE | row=2 | The game's scope/ruleset and the first playable slice | src=docs/DECISION-LEDGER.md
 QUEUE | row=3 | Remote repo (github.com/ArndRosemeier/Tetris) — does not exist yet | src=BLOCKER below
@@ -38,10 +43,12 @@ QUEUE | row=4 | Publish target apps.futuremagic.de/Tetris (symlink + index entry
 
 BLOCKER | No `origin` remote. `scripts/board.sh` and the remote-reconcile discipline cannot
   run until one exists (it exits CANNOT LOOK). Needs an owner decision, because creating a
-  repo on the owner's GitHub account is an external side effect.
+  repo on the owner's GitHub account is an external side effect. Measured 2026-10-06:
+  `git ls-remote https://github.com/ArndRosemeier/Tetris.git` → "Repository not found."
 
 RECOVERY | repo=/home/administrator/projects/Tetris | remote=<none yet> | branch=main |
   gate=bash scripts/gate.sh | logs=.gate-logs/ | process=~/projects/Toolbox/docs/WAY-OF-WORKING.md
+  | sessions=~/.dsh/sessions/--home-administrator-projects-Tetris--
 ```
 
 No `LANDED` rows yet: nothing has been independently verified.
@@ -60,6 +67,14 @@ No `LANDED` rows yet: nothing has been independently verified.
 - `TRAP` — a fresh project's board cannot be reconciled at all: with no `origin`, the
   reconciler exits `CANNOT LOOK` rather than reporting a pass. Rule: a check that cannot
   look must never be read as green; create the remote before trusting board.sh.
+- `TRAP` — a copied `scripts/gate.sh` keeps the **source project's** commands as its
+  defaults: it ran `npm run typecheck` / `npm test` against a pnpm project. Measured
+  2026-10-06, bootstrap. Rule: after copying the scaffold, set both tier commands **and run
+  both tiers** before trusting the copy — a gate that has never run is not a gate.
+- `TRAP` — the `tsconfig.json` copied from `BlasterMaster` omitted `"node"` from `types`
+  (that project's tests never import a node builtin), so the first Node-importing test
+  reddened the cheap tier with `TS2591: Cannot find name 'node:fs'`. Rule: a copied config
+  carries the source project's assumptions; the first real test is what proves the copy.
 
 ## Recovery pointers
 

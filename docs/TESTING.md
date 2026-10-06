@@ -27,12 +27,18 @@ Never pipe a run through `tail`/`head`.
 
 ## Per landing
 
-### `<pending first commit>` — bootstrap
+### 63a1500 — bootstrap
 
-- **Gate:** cheap tier exit `2` · full tier exit `0` · `1/1` tests · raw log
-  `.gate-logs/gate.log`
-- **Differential:** arm A (baseline) = committed tree · arm B = `src/version.ts` bumped to
-  an unmatching version → RED on `APP_VERSION matches the version in package.json`
+- **Gate:** cheap tier exit `2` (build green, suite deliberately NOT run) · full tier exit
+  `0` · `1/1` tests · vite build 58ms · raw log `.gate-logs/gate.log`
+- **Differential:** arm A `4f0fd4092437bea2` (baseline `src/version.ts`, committed) · arm B
+  `edf3ec532ba1bbda` (`APP_VERSION` → `9.9.9`) → full gate exit `1`, RED on
+  `src/version.test.ts > APP_VERSION > matches the version in package.json`
+  (`AssertionError: expected '9.9.9' to be '0.0.1'`). Raw log `.gate-logs/diff-armB.log`.
+  Restore verified: hash back to `4f0fd4092437bea2`, `git status` clean.
+- **What the differential proved about the tiers:** the cheap tier stayed **GREEN** on arm B
+  — a version drift typechecks and builds. Only the full tier catches it. The cheap tier is
+  a *deploy* guard, never a correctness guard.
 - **VOID:** none
 
 ## Honest records
