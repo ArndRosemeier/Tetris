@@ -61,12 +61,17 @@ RECOVERY | repo=/home/administrator/projects/Tetris |
 
 ## Guards
 
-- **`GUARD` — the suite lock.** `scripts/gate.sh` takes an atomic `mkdir` lock at
-  `.gate-lock/` derived from the git common dir, so it is the same path from the main tree
-  and every worktree. A second full run is refused (exit 9) and is VOID. Verify: run a full
-  gate twice.
+- **`GUARD` — the suite lock, and it is ONE lock across worktrees.** `scripts/gate.sh` takes
+  an atomic `mkdir` lock at `.gate-lock/` derived from the git common dir. **VERIFIED
+  2026-10-06** with the lock held by a live process: a full gate run **from a worktree**
+  exited `9` (REFUSED, VOID); with the lock free the same run from the worktree was GREEN and
+  printed `repo: /home/administrator/projects/Tetris`. Verify it the same way.
 - **`GUARD` — the cheap tier cannot pass as a full gate.** `GATE_TESTS=0` exits 2, never 0.
-  Verify: `GATE_TESTS=0 bash scripts/gate.sh; echo $?` prints 2.
+  **VERIFIED 2026-10-06** (exit 2 on the bootstrap tree). Verify:
+  `GATE_TESTS=0 bash scripts/gate.sh; echo $?` prints 2.
+- **`GUARD` — a writer's worktree is disposable.** **VERIFIED 2026-10-06**:
+  `git worktree add` → gate → `git worktree remove` + `git branch -D` left the main tree
+  clean, the lock free, and no stray process.
 
 ## Traps (each with the rule that prevents it)
 

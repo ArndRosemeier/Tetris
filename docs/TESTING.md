@@ -30,7 +30,9 @@ Never pipe a run through `tail`/`head`.
 ### 63a1500 — bootstrap
 
 - **Gate:** cheap tier exit `2` (build green, suite deliberately NOT run) · full tier exit
-  `0` · `1/1` tests · vite build 58ms · raw log `.gate-logs/gate.log`
+  `0` · `1/1` tests · vite build 58ms · raw log `.gate-logs/gate.log`, archived as
+  `.gate-logs/landing-63a1500.log` (the gate overwrites its log, so a quoted landing's log is
+  copied aside before the next run)
 - **Differential:** arm A `4f0fd4092437bea2` (baseline `src/version.ts`, committed) · arm B
   `edf3ec532ba1bbda` (`APP_VERSION` → `9.9.9`) → full gate exit `1`, RED on
   `src/version.test.ts > APP_VERSION > matches the version in package.json`
