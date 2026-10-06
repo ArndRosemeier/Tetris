@@ -43,6 +43,29 @@ Never pipe a run through `tail`/`head`.
   a *deploy* guard, never a correctness guard.
 - **VOID:** none
 
+## Deploy verification (what proves a publish)
+
+A publish is proven by **CONTENT**, never by a status code — an old build answers `200` too.
+`bash scripts/publish.sh` performs all of it and exits non-zero if any step fails, so a
+half-finished publish cannot look done:
+
+1. the built `dist/index.html` references `/<slug>/assets/…` — a root-absolute build renders a
+   **blank page** under a subpath, and nothing downstream catches that;
+2. the local origin (which bypasses the CDN) serves the **same hashed asset** this build just
+   wrote, and that asset is fetchable;
+3. the public URL answers `200` with `cf-cache-status: DYNAMIC` — a `HIT` on an unchanged
+   filename would mean OLD bytes are being served;
+4. the hub is rebuilt, its **served** asset hashes equal the built ones, and the live
+   `apps.index.json` lists the app.
+
+### 170e34a — first publish (ledger row 4)
+
+- **App:** built `assets/index-C_yU7wtq.js` · local origin `200`, same hash · public
+  `https://apps.futuremagic.de/Tetris/` `200`, `cf-cache-status: DYNAMIC`, asset `200`
+- **Hub:** served `index-DKg0JsrY.js` + `index--fd800dr.css`, identical to the built `dist` ·
+  live index = 18 apps, Tetris present
+- **What was actually live:** the shell — it renders `Tetris 0.0.1`. Recorded, not smoothed over.
+
 ## Honest records
 
 A VOID probe, a wrong-file green, a discarded log and a verification run against a stale

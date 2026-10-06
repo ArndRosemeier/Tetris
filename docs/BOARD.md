@@ -25,7 +25,7 @@ claim — never use that key for prose about a retirement that is still owed.
 ## Board
 
 ```
-reconciled: 1d0da40 · 2026-10-06T13:36Z
+reconciled: 170e34a · 2026-10-06T13:41Z
 
 SESSION | id=session-76777914-6dab-4bba-975f-d4444ae0ed6d | model=deepseek/deepseek-flash | role=chief-of-staff | state=dispatching
 
@@ -46,16 +46,27 @@ INFRA | remote=https://github.com/ArndRosemeier/Tetris.git | created=2026-10-06 
   dispatcher via the GitHub API (http 201) | visibility=public, matching all six sibling
   repos | push=HEAD 1d0da4023979c2a3a669da8bc0ebaa27b22012ee == origin/main, verified
 
+LANDED | row=4 | sha=170e34ad7b863baaedbf1c41067a0f23ce469574 | verify=MY OWN: `publish.sh`
+  exit 0 · built entry references /Tetris/assets/index-C_yU7wtq.js · `~/apps/Tetris` -> `dist`
+  symlink · local origin HTTP 200 serving the SAME hash, asset 200 · public
+  https://apps.futuremagic.de/Tetris/ HTTP/2 200 with cf-cache-status=DYNAMIC, asset 200 · hub
+  rebuilt: SERVED index-DKg0JsrY.js + index--fd800dr.css identical to the built dist, live
+  apps.index.json = 18 apps including Tetris · gate: full tier exit 0 | docs=board, ledger row 4,
+  testing §deploy | note=THE LIVE PAGE IS THE SHELL — it renders "Tetris 0.0.1". The hub card is
+  honest about that ("In progress.")
+
 QUEUE | row=2 | DECIDED: 1989 NES-faithful clone (see ledger row 2). The pure-simulation
   slice is QUEUED behind the mechanics probe — no brief goes out until the NES rotation and
   randomiser behaviour is pinned, because they are the slice's pins | src=docs/DECISION-LEDGER.md
-QUEUE | row=4 | Publish under apps.futuremagic.de/Tetris (symlink in ~/apps + index entry) —
-  after a first playable slice exists | src=the apps-publish skill
-QUEUE-CLOSED | row=3 — the remote now exists; see INFRA
+QUEUE | row=5 | Remove "In progress." from `public/futuremagic.json` and give the card a
+  screenshot, once a playable slice exists — the public card must not carry a stale caveat | src=public/futuremagic.json
+QUEUE-CLOSED | row=3 — the remote now exists; see INFRA · row=4 — PUBLISHED; see LANDED
 
 RECOVERY | repo=/home/administrator/projects/Tetris |
   remote=https://github.com/ArndRosemeier/Tetris.git | branch=main | gate=bash scripts/gate.sh
-  | logs=.gate-logs/ | process=~/projects/Toolbox/docs/WAY-OF-WORKING.md
+  | publish=bash scripts/publish.sh | live=https://apps.futuremagic.de/Tetris/ (symlink from
+  ~/apps/Tetris to dist/, so every rebuild goes live) | logs=.gate-logs/
+  | process=~/projects/Toolbox/docs/WAY-OF-WORKING.md
   | sessions=~/.dsh/sessions/--home-administrator-projects-Tetris--
 ```
 
@@ -72,6 +83,12 @@ RECOVERY | repo=/home/administrator/projects/Tetris |
 - **`GUARD` — a writer's worktree is disposable.** **VERIFIED 2026-10-06**:
   `git worktree add` → gate → `git worktree remove` + `git branch -D` left the main tree
   clean, the lock free, and no stray process.
+- **`GUARD` — the CDN does not edge-cache the HTML, so a publish goes live at once.**
+  **MEASURED 2026-10-06** on the first publish: `https://apps.futuremagic.de/Tetris/` and the
+  hub root both answered `cf-cache-status: DYNAMIC`. The four-hour staleness the apps-publish
+  skill warns about therefore does NOT bite an entry page here (and the assets are
+  content-hashed anyway) — but the warning still governs any fixed-name file, e.g. a service
+  worker. RE-MEASURE after any change to the host or the CDN setup; do not inherit this.
 
 ## Traps (each with the rule that prevents it)
 
@@ -86,6 +103,13 @@ RECOVERY | repo=/home/administrator/projects/Tetris |
   (that project's tests never import a node builtin), so the first Node-importing test
   reddened the cheap tier with `TS2591: Cannot find name 'node:fs'`. Rule: a copied config
   carries the source project's assumptions; the first real test is what proves the copy.
+- `TRAP` — **the dispatcher destroyed an append-only ledger row.** Anchoring a text edit on
+  ALL of row 3 in order to insert row 4 *replaced* row 3 instead of appending after it.
+  Measured 2026-10-06 during the publish record. Caught by re-reading the file seconds later;
+  row 3 was restored BYTE-IDENTICAL from `git show HEAD:docs/DECISION-LEDGER.md` and the fix
+  was proven to be a pure addition (`git diff --numstat` = 1 insertion, 0 deletions). Rule: to
+  append to an append-only file, anchor the edit on the END of the LAST row (or use a heredoc)
+  — never on a whole existing row — and always verify the result is an ADDITION.
 
 ## Recovery pointers
 
