@@ -25,9 +25,14 @@ claim — never use that key for prose about a retirement that is still owed.
 ## Board
 
 ```
-reconciled: 63a1500 · 2026-10-06T13:30Z
+reconciled: 1d0da40 · 2026-10-06T13:36Z
 
-SESSION | id=session-76777914-6dab-4bba-975f-d4444ae0ed6d | model=deepseek/deepseek-flash | role=chief-of-staff | state=idle
+SESSION | id=session-76777914-6dab-4bba-975f-d4444ae0ed6d | model=deepseek/deepseek-flash | role=chief-of-staff | state=dispatching
+
+PROBE | id=b496443b-2efb-44af-8cbe-3d0574bf9953 | state=in-flight | q="the exact NES
+  Tetris mechanics — rotation and any wall-bump behaviour, the piece randomiser algorithm,
+  DAS frames, the gravity table, scoring, lock behaviour, top-out" | src=docs/DECISION-LEDGER.md
+  row 2 | disposition=STEER, never restart; delete the moment its report is consumed
 
 LANDED | row=1 | sha=63a15003cf0bb2f5785c09421ea5065305b7c168 | verify=MY OWN: cheap tier
   green (exit 2) + full gate GREEN (exit 0) · 1/1 tests · vite build 58ms · raw log
@@ -37,21 +42,22 @@ LANDED | row=1 | sha=63a15003cf0bb2f5785c09421ea5065305b7c168 | verify=MY OWN: c
   docs=board, ledger row 1, testing per-landing 63a1500 | note=bootstrap only; no game
   code exists yet
 
-QUEUE | row=2 | The game's scope/ruleset and the first playable slice | src=docs/DECISION-LEDGER.md
-QUEUE | row=3 | Remote repo (github.com/ArndRosemeier/Tetris) — does not exist yet | src=BLOCKER below
-QUEUE | row=4 | Publish target apps.futuremagic.de/Tetris (symlink + index entry) | src=the apps-publish skill
+INFRA | remote=https://github.com/ArndRosemeier/Tetris.git | created=2026-10-06 by the
+  dispatcher via the GitHub API (http 201) | visibility=public, matching all six sibling
+  repos | push=HEAD 1d0da4023979c2a3a669da8bc0ebaa27b22012ee == origin/main, verified
 
-BLOCKER | No `origin` remote. `scripts/board.sh` and the remote-reconcile discipline cannot
-  run until one exists (it exits CANNOT LOOK). Needs an owner decision, because creating a
-  repo on the owner's GitHub account is an external side effect. Measured 2026-10-06:
-  `git ls-remote https://github.com/ArndRosemeier/Tetris.git` → "Repository not found."
+QUEUE | row=2 | DECIDED: 1989 NES-faithful clone (see ledger row 2). The pure-simulation
+  slice is QUEUED behind the mechanics probe — no brief goes out until the NES rotation and
+  randomiser behaviour is pinned, because they are the slice's pins | src=docs/DECISION-LEDGER.md
+QUEUE | row=4 | Publish under apps.futuremagic.de/Tetris (symlink in ~/apps + index entry) —
+  after a first playable slice exists | src=the apps-publish skill
+QUEUE-CLOSED | row=3 — the remote now exists; see INFRA
 
-RECOVERY | repo=/home/administrator/projects/Tetris | remote=<none yet> | branch=main |
-  gate=bash scripts/gate.sh | logs=.gate-logs/ | process=~/projects/Toolbox/docs/WAY-OF-WORKING.md
+RECOVERY | repo=/home/administrator/projects/Tetris |
+  remote=https://github.com/ArndRosemeier/Tetris.git | branch=main | gate=bash scripts/gate.sh
+  | logs=.gate-logs/ | process=~/projects/Toolbox/docs/WAY-OF-WORKING.md
   | sessions=~/.dsh/sessions/--home-administrator-projects-Tetris--
 ```
-
-No `LANDED` rows yet: nothing has been independently verified.
 
 ## Guards
 
