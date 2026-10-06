@@ -113,6 +113,47 @@ Never pipe a run through `tail`/`head`.
   distinct mutated hash and each cites a different pin name and a different assertion.
 - **VOID:** none.
 
+### fa0001d — the DISPATCHER's independent verification (ledger row 5)
+
+The author's gate proves the change does what the author *meant*; only an independent arm proves
+the pins hold the property. Run by the dispatcher on the INTEGRATED tree after the landing, with
+no other writer in flight.
+
+- **The dispatcher's own gate** (main tree at `fa0001d`, full tier): exit `0` · **45/45** in 7
+  files · 599ms · raw log `.gate-logs/gate.log`. It matches the author's **45/45** exactly, which
+  is the point of running it.
+- **The author honestly listed pins 8, 10, 12 and 13 as never watched red.** The dispatcher chose
+  those for its own arms. Checking the author's arm list against the pin list also showed **pin 4**
+  covered by no arm at all, so it was added. Script
+  `.gate-logs/dispatcher-differential.sh`; baseline `src/game/simulation.ts` sha256[0:16]
+  `6f53e1cd4d2fb51b`, restored from an out-of-tree copy in a `trap`:
+
+  | Arm | Target pin | Mutated hash | Gate exit | Pin that went RED |
+  | --- | --- | --- | ---: | --- |
+  | 4 | per-frame LFSR stepping | `bf6a06e0783b6d8d` | 1 | `the LFSR seam inside the stepper > steps the LFSR exactly once per frame, whatever the input or phase` (+ Vector D, + hidden rows); `3 failed \| 42 passed` |
+  | 8 | top-out | `f0ef6fb8299087a7` | 1 | `top-out > ends only when a piece LOCKS invalid; an overlapping spawn is not itself a loss`; `1 failed \| 44 passed` |
+  | 10 | scoring at the post-clear level | `4dd1a946c14a38bb` | 1 | `scoring > scores every lock at the level AFTER the clear, including the one that levels up`; `1 failed \| 44 passed` |
+  | 12 | no shift while Down is held | `1a14c27f26a14ba8` | 1 | `soft drop gating > refuses the horizontal shift — tap and auto-shift alike — while Down is held` (+ released); `2 failed \| 43 passed` |
+  | 13 | preview matches spawn | `dea08147f221262d` | 1 | `the preview > always spawns exactly the piece the preview showed` (+ hidden rows); `2 failed \| 43 passed` |
+
+  Restore verified: hash back to `6f53e1cd4d2fb51b`, `git status` clean. Five distinct mutated
+  hashes = five real probes. **Every pin in the matrix has now been watched red**, by the author
+  (1,2,3,5,6,7,9,11) or by the dispatcher (4,8,10,12,13).
+- **VOID (the dispatcher's own, recorded not hidden):** the FIRST arm-13 injection replaced the
+  spawn's `id` with `rolled.id`, leaving `id` unread. `noUnusedLocals` made `tsc` fail the cheap
+  tier (`error TS6133: 'id' is declared but its value is never read`) so the gate exited `1`
+  **with no failing test** — an exit code that looked like a red pin and was a compile error. That
+  arm never exercised pin 13 and proved nothing. Log kept as
+  `.gate-logs/dispatcher-arms/arm-13-VOID.log`; re-injected as a two-line swap so both bindings
+  stay used, which reddened the pin properly. **A non-zero exit is not evidence until the failing
+  test's NAME is read.**
+- **The dispatcher reproduced the author's spec correction independently:** 4,936 consecutive
+  same-piece repeats in 200,000 picks, so `docs/NES-MECHANICS.md` §2's invariant claim was wrong
+  and has been corrected.
+- **Retired:** worktree `worktrees/simulation-core` removed, branch `slice/simulation-core` deleted
+  (it was never pushed — only `main` is on the remote), author session deleted. Salvage-checked
+  first: the worktree was clean and its HEAD `fa0001d` was already an ancestor of `origin/main`.
+
 ## Deploy verification (what proves a publish)
 
 A publish is proven by **CONTENT**, never by a status code — an old build answers `200` too.

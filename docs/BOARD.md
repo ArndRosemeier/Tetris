@@ -25,9 +25,9 @@ claim — never use that key for prose about a retirement that is still owed.
 ## Board
 
 ```
-reconciled: 170e34a · 2026-10-06T13:41Z
+reconciled: fa0001d · 2026-10-06T14:05Z
 
-SESSION | id=session-76777914-6dab-4bba-975f-d4444ae0ed6d | model=deepseek/deepseek-flash | role=chief-of-staff | state=waiting
+SESSION | id=session-76777914-6dab-4bba-975f-d4444ae0ed6d | model=deepseek/deepseek-flash | role=chief-of-staff | state=idle — awaiting a work order
 
 PROBE | id=b496443b-2efb-44af-8cbe-3d0574bf9953 | state=CONSUMED 2026-10-06 and DELETED |
   q="the exact NES Tetris mechanics" | answer=docs/NES-MECHANICS.md — sourced, confidence-tagged
@@ -59,37 +59,35 @@ LANDED | row=4 | sha=170e34ad7b863baaedbf1c41067a0f23ce469574 | verify=MY OWN: `
   testing §deploy | note=THE LIVE PAGE IS THE SHELL — it renders "Tetris 0.0.1". The hub card is
   honest about that ("In progress.")
 
-IN-FLIGHT | ledger=5 | session=4f1d84a5-e489-4882-8d17-6c614fc06701 | worktree=/home/administrator/projects/Tetris/worktrees/simulation-core
-  | branch=slice/simulation-core | base=8bab1c5e6830b37b0ecd13e14d80812c753f3450 | state=LANDED 2026-10-06 — see LANDED row=5 below
-  | scope=THE PURE SIMULATION under `src/game/` — the 19 orientations and refused-in-place
-  rotation, the LFSR + spawn-count randomiser, the 10x22 board with 2 hidden rows, the gravity
-  table, soft drop, lock-on-failed-drop, line clear with hidden-row truncation, lock-time-overlap
-  top-out, post-clear-level scoring, the first-level-up table, DAS 16/6, spawn/ARE timing, and the
-  one-piece accurate preview. 13 named pins; dispatcher design decision Vector D. Nothing renders.
-  | cadence=SILENCE until LANDED or BLOCKED; a clean tree with no new commit is normal
+RETIRED | ledger=5 | session=4f1d84a5-e489-4882-8d17-6c614fc06701 DELETED | worktree
+  /home/administrator/projects/Tetris/worktrees/simulation-core REMOVED | salvage-checked BEFORE
+  anything was deleted: the worktree was clean and its HEAD fa0001d was already an ancestor of
+  origin/main | the branch claim is its own line below, the only form the reconciler reads
 
-LANDED | row=5 | sha=this commit carries this row (`git log -1 --format=%H origin/main`) |
-  branch=slice/simulation-core | worktree=worktrees/simulation-core | session=4f1d84a5-e489-4882-8d17-6c614fc06701 |
-  verify=MY OWN, in-turn foreground from the worktree: full gate exit 0 twice — pre-rebase run
-  (build 53ms, 45/45 in 639ms) and the re-gate on the REBASED tree 4f6b7e2 (build 48ms, 45/45 in
-  635ms); after the docs-only conflict-resolution amend, cheap tier exit 2 (docs change the
-  typecheck/build not at all, and the cheap tier takes no lock) · raw log .gate-logs/gate.log (the
-  gate writes to the SHARED git-common-dir, so every worktree overwrites the same file) | arms=4 arms, each injected then
-  restored from an out-of-tree copy inside a trap: (1) simulation.ts 8cb24aab54bdf534 ->
-  82f28184ddfd9d00 RED pin 1 (+ pin 7), (2) lfsr.ts 9ac9894154bbfc54 -> 90f5fcfacc4027ae RED pin 2
-  (+ pins 3, 5, 9), (3) gravity.ts 2b1bfc9b0d165807 -> 93760edd77151ede RED pin 6 (both halves),
-  (4) das.ts 5766569f48d15956 -> e5d46ca71d0707d6 RED pin 11; every arm exit 1, post-arm hashes
-  identical to baseline | docs=architecture (real seam rows + the SimulationState shape), ledger
-  row 5, testing (full pin matrix + arm hashes), board | COPIES: 1 — checked, no duplication
-  (grepped: the 19 orientations, the LFSR recurrence, spawnTable, the gravity table, the DAS
-  constants and the `[W]` delays each appear in exactly one module under src/game/) | note=THE
-  SIMULATION ONLY — nothing renders; src/main.ts still writes a version string. Pins 8, 10, 12,
-  13 are green but have NOT been watched red.
+retired_branch=slice/simulation-core
 
-QUEUE | ledger=2 CLOSED — the ruleset decision is in force and is being implemented by the
-  in-flight slice above
+LANDED | row=5 | sha=fa0001dfabc8b561f63d76cc060ea0e0668f92de | author-verify=full gate exit 0
+  twice, in-turn/foreground FROM the worktree (45/45 in 639ms pre-rebase; 45/45 in 635ms on the
+  rebased 4f6b7e2) | DISPATCHER-VERIFY (MY OWN, on the INTEGRATED tree at fa0001d): full gate
+  exit 0 · 45/45 in 7 files · 599ms — matching the author's count; plus 5 arms of my own on pins
+  4, 8, 10, 12, 13 — the four the author HONESTLY reported as never watched red, plus pin 4,
+  which no arm had covered at all — each exit 1 and each RED on its named pin, distinct hashes,
+  restore verified, tree clean | pins=ALL 13 now watched red (author 1,2,3,5,6,7,9,11 ·
+  dispatcher 4,8,10,12,13) | MY OWN VOID=the first arm-13 injection left `id` unread, so tsc
+  failed the cheap tier (TS6133) and the gate exited 1 with NO failing test — an exit code that
+  looked like a red pin and was a compile error; it proved nothing and was re-injected properly |
+  details=docs/TESTING.md §fa0001d | COPIES: 1 — checked, no duplication (grepped: the 19
+  orientations, the LFSR recurrence, spawnTable, the gravity table, the DAS constants and the
+  `[W]` delays each appear in exactly one module under src/game/) | note=THE SIMULATION ONLY —
+  nothing renders yet; src/main.ts still writes a version string
+
+QUEUE | ledger=2 CLOSED — the ruleset decision is in force and is implemented by LANDED row=5
 QUEUE | row=6 | Remove "In progress." from `public/futuremagic.json` and give the card a
   screenshot, once a playable slice exists — the public card must not carry a stale caveat | src=public/futuremagic.json
+QUEUE | row=7 | NOT DISPATCHED, awaiting the owner's word — the browser shell: renderer (canvas),
+  input (keyboard + touch) and the published app actually PLAYING. The simulation seam is frozen
+  and its `SimulationState` shape is documented, so renderer and input are disjoint files and can
+  go out as a PAIR of writers, not one after the other | src=docs/ARCHITECTURE.md
 QUEUE-CLOSED | row=3 — the remote now exists; see INFRA · row=4 — PUBLISHED; see LANDED
 
 RECOVERY | repo=/home/administrator/projects/Tetris |

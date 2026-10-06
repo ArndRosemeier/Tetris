@@ -85,7 +85,12 @@ fixed. CCW is the inverse. **Z and S are not true mirrors** (both derive from CC
   orientation IDs `{2,7,8,10,11,14,18}` (DIS L3013).
 - The first roll is rejected 1/8 of the time by the dummy value `7`, plus ~1/8 by the repeat
   check, so the biased second roll runs ~25% of the time. The repeat check compares orientation
-  IDs — effectively "not the same piece twice in a row".
+  IDs, but that is an **approximation** of "not the same piece twice in a row" and **not an
+  invariant**: the re-roll `(((seed >> 8) & 7) + spawnID) % 7` is **not re-checked**, so it can
+  land on the previous piece. Independently measured 2026-10-06: **4,936 consecutive repeats in
+  200,000 picks**. The suite pins that the repeat *can* happen, so nobody "fixes" the picker into
+  a different sequence. *(This paragraph was corrected by the simulation slice — the earlier
+  wording asserted the invariant. The writer proved it wrong; the dispatcher reproduced it.)*
 - **No drought protection.** L and I are marginally rarer; droughts of 30+ pieces are common.
 - **Exploitability:** the piece is read from the live LFSR at the spawn frame, and the spawn
   frame = lock frame + ARE (+ line-clear delay), so *how long the player takes* changes the next
