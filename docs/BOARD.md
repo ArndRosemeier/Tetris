@@ -27,7 +27,7 @@ claim — never use that key for prose about a retirement that is still owed.
 ```
 reconciled: 170e34a · 2026-10-06T13:41Z
 
-SESSION | id=session-76777914-6dab-4bba-975f-d4444ae0ed6d | model=deepseek/deepseek-flash | role=chief-of-staff | state=dispatching
+SESSION | id=session-76777914-6dab-4bba-975f-d4444ae0ed6d | model=deepseek/deepseek-flash | role=chief-of-staff | state=waiting
 
 PROBE | id=b496443b-2efb-44af-8cbe-3d0574bf9953 | state=CONSUMED 2026-10-06 and DELETED |
   q="the exact NES Tetris mechanics" | answer=docs/NES-MECHANICS.md — sourced, confidence-tagged
@@ -59,10 +59,18 @@ LANDED | row=4 | sha=170e34ad7b863baaedbf1c41067a0f23ce469574 | verify=MY OWN: `
   testing §deploy | note=THE LIVE PAGE IS THE SHELL — it renders "Tetris 0.0.1". The hub card is
   honest about that ("In progress.")
 
-QUEUE | row=2 | DECIDED: 1989 NES-faithful clone (see ledger row 2). The pure-simulation
-  slice is QUEUED behind the mechanics probe — no brief goes out until the NES rotation and
-  randomiser behaviour is pinned, because they are the slice's pins | src=docs/DECISION-LEDGER.md
-QUEUE | row=5 | Remove "In progress." from `public/futuremagic.json` and give the card a
+IN-FLIGHT | ledger=5 | session=4f1d84a5-e489-4882-8d17-6c614fc06701 | worktree=/home/administrator/projects/Tetris/worktrees/simulation-core
+  | branch=slice/simulation-core | base=8bab1c5e6830b37b0ecd13e14d80812c753f3450 | state=RUNNING
+  | scope=THE PURE SIMULATION under `src/game/` — the 19 orientations and refused-in-place
+  rotation, the LFSR + spawn-count randomiser, the 10x22 board with 2 hidden rows, the gravity
+  table, soft drop, lock-on-failed-drop, line clear with hidden-row truncation, lock-time-overlap
+  top-out, post-clear-level scoring, the first-level-up table, DAS 16/6, spawn/ARE timing, and the
+  one-piece accurate preview. 13 named pins; dispatcher design decision Vector D. Nothing renders.
+  | cadence=SILENCE until LANDED or BLOCKED; a clean tree with no new commit is normal
+
+QUEUE | ledger=2 CLOSED — the ruleset decision is in force and is being implemented by the
+  in-flight slice above
+QUEUE | row=6 | Remove "In progress." from `public/futuremagic.json` and give the card a
   screenshot, once a playable slice exists — the public card must not carry a stale caveat | src=public/futuremagic.json
 QUEUE-CLOSED | row=3 — the remote now exists; see INFRA · row=4 — PUBLISHED; see LANDED
 
